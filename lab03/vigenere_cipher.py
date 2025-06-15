@@ -1,6 +1,6 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox
-from ui.caesar import Ui_MainWindow
+from ui.vigenere import Ui_MainWindow
 import requests
 
 class MyApp(QMainWindow):
@@ -12,16 +12,16 @@ class MyApp(QMainWindow):
         self.ui.btn_decrypt.clicked.connect(self.call_api_decrypt)
 
     def call_api_encrypt(self):
-        url = "http://127.0.0.1:5000/api/caesar/encrypt"
+        url = "http://127.0.0.1:5000/api/vigenere/encrypt"
         payload = {
-            "plain_text": self.ui.txt_plain.toPlainText(),
+            "plain_text": self.ui.txt_plaintext.toPlainText(),
             "key": self.ui.txt_key.text()
         }
         try:
             response = requests.post(url, json=payload)
             if response.status_code == 200:
                 data = response.json()
-                self.ui.txt_cipher.setText(data["encrypted_text"])
+                self.ui.txt_ciphertext.setText(data["encrypted_text"])
                 msg = QMessageBox()
                 msg.setIcon(QMessageBox.Information)
                 msg.setText("Encrypted Successfully")
@@ -32,16 +32,16 @@ class MyApp(QMainWindow):
             print("Error: %s" % e.message)
 
     def call_api_decrypt(self):
-        url = "http://127.0.0.1:5000/api/caesar/decrypt"
+        url = "http://127.0.0.1:5000/api/vigenere/decrypt"
         payload = {
-            "cipher_text": self.ui.txt_cipher.toPlainText(),
+            "cipher_text": self.ui.txt_ciphertext.toPlainText(),
             "key": self.ui.txt_key.text()
         }
         try:
             response = requests.post(url, json=payload)
             if response.status_code == 200:
                 data = response.json()
-                self.ui.txt_plain.setText(data["decrypted_text"])
+                self.ui.txt_plaintext.setText(data["decrypted_text"])
                 msg = QMessageBox()
                 msg.setIcon(QMessageBox.Information)
                 msg.setText("Decrypted Successfully")
@@ -50,7 +50,6 @@ class MyApp(QMainWindow):
                 print("Error while calling API")
         except requests.exceptions.RequestException as e:
             print("Error: %s" % e.message)
-
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MyApp()
